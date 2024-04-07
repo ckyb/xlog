@@ -64,7 +64,7 @@ type editQuickCommand struct{ page Page }
 
 func (a editQuickCommand) Icon() string          { return "fa-solid fa-pen" }
 func (a editQuickCommand) Name() string          { return "Edit" }
-func (a editQuickCommand) Link() string          { return "/edit/" + a.page.Name() }
+func (a editQuickCommand) Link() string          { return "/+/edit/" + a.page.Name() }
 func (a editQuickCommand) OnClick() template.JS  { return "" }
 func (a editQuickCommand) Widget() template.HTML { return "" }
 

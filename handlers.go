@@ -17,7 +17,7 @@ func Start(ctx context.Context) {
 	// Program Core routes. View, Edit routes and a route to write new content
 	// to the page. + handling root path which just show `index` page.
 	Get("/{$}", rootHandler)
-	Get("/edit/{page...}", getPageEditHandler)
+	Get("/+/edit/{page...}", getPageEditHandler)
 	Get("/{page...}", getPageHandler)
 	Post("/{page...}", postPageHandler)
 
@@ -67,13 +67,13 @@ func getPageHandler(w Response, r Request) Output {
 			return NotFound("can't find page")
 		}
 
-		return Redirect("/edit/" + page.Name())
+		return Redirect("/+/edit/" + page.Name())
 	}
 
 	return Render("view", Locals{
 		"title":   page.Emoji() + " " + page.Name(),
 		"page":    page,
-		"edit":    "/edit/" + page.Name(),
+		"edit":    "/+/edit/" + page.Name(),
 		"content": page.Render(),
 		"csrf":    CSRF(r),
 	})
