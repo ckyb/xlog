@@ -43,7 +43,7 @@ func (m *markdownCWDFS) Page(name string) Page {
 		name = INDEX
 	}
 
-	return &page{
+	return &BasePage{
 		name: name,
 	}
 }

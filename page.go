@@ -47,25 +47,25 @@ type Page interface {
 	Emoji() string
 }
 
-type page struct {
+type BasePage struct {
 	name string
 	ast  ast.Node
 }
 
-func (p *page) Name() string {
+func (p *BasePage) Name() string {
 	return p.name
 }
 
-func (p *page) FileName() string {
+func (p *BasePage) FileName() string {
 	return filepath.FromSlash(p.name) + ".md"
 }
 
-func (p *page) Exists() bool {
+func (p *BasePage) Exists() bool {
 	_, err := os.Stat(p.FileName())
 	return err == nil
 }
 
-func (p *page) Render() template.HTML {
+func (p *BasePage) Render() template.HTML {
 	content := p.Content()
 	content = PreProcess(content)
 
@@ -77,7 +77,7 @@ func (p *page) Render() template.HTML {
 	return template.HTML(buf.String())
 }
 
-func (p *page) Content() Markdown {
+func (p *BasePage) Content() Markdown {
 	dat, err := os.ReadFile(p.FileName())
 	if err != nil {
 		return ""
@@ -85,7 +85,7 @@ func (p *page) Content() Markdown {
 	return Markdown(dat)
 }
 
-func (p *page) Delete() bool {
+func (p *BasePage) Delete() bool {
 	defer Trigger(AfterDelete, p)
 
 	if p.Exists() {
@@ -98,7 +98,7 @@ func (p *page) Delete() bool {
 	return true
 }
 
-func (p *page) Write(content Markdown) bool {
+func (p *BasePage) Write(content Markdown) bool {
 	Trigger(BeforeWrite, p)
 	defer Trigger(AfterWrite, p)
 
@@ -113,7 +113,7 @@ func (p *page) Write(content Markdown) bool {
 	return true
 }
 
-func (p *page) ModTime() time.Time {
+func (p *BasePage) ModTime() time.Time {
 	s, err := os.Stat(p.FileName())
 	if err != nil {
 		return time.Time{}
@@ -122,7 +122,7 @@ func (p *page) ModTime() time.Time {
 	return s.ModTime()
 }
 
-func (p *page) AST() ast.Node {
+func (p *BasePage) AST() ast.Node {
 	if p.ast == nil {
 		p.ast = MarkDownRenderer.Parser().Parse(text.NewReader([]byte(p.Content())))
 	}
@@ -130,7 +130,7 @@ func (p *page) AST() ast.Node {
 	return p.ast
 }
 
-func (p *page) Emoji() string {
+func (p *BasePage) Emoji() string {
 	if e, ok := FindInAST[*emojiAst.Emoji](p.AST()); ok {
 		return string(e.Value.Unicode)
 	}
